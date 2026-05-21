@@ -52,8 +52,8 @@ export default function LoginForm() {
     <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4">
       <div className="glass-panel w-full max-w-sm rounded-2xl p-8">
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-gold to-amber-light">
-            <span className="text-cyber-bg text-xl font-black">琥</span>
+          <div className="mx-auto mb-3 h-12 w-12 overflow-hidden rounded-xl">
+            <img src="/logo.jpg" alt="赛博琥珀博物馆" className="h-full w-full object-cover" />
           </div>
           <h1 className="text-xl font-bold">欢迎回来</h1>
           <p className="text-sm text-muted-foreground mt-1">登录赛博琥珀博物馆</p>

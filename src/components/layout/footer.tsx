@@ -7,8 +7,8 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="flex flex-col items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded bg-gradient-to-br from-amber-gold to-amber-light">
-              <span className="text-cyber-bg text-xs font-black">琥</span>
+            <div className="h-6 w-6 overflow-hidden rounded">
+              <img src="/logo.jpg" alt="赛博琥珀博物馆" className="h-full w-full object-cover" />
             </div>
             <span className="text-foreground font-semibold">赛博琥珀博物馆</span>
           </div>

@@ -31,8 +31,8 @@ export function Navbar() {
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-amber-gold to-amber-light">
-            <span className="text-cyber-bg text-sm font-black">琥</span>
+          <div className="h-8 w-8 overflow-hidden rounded-lg">
+            <img src="/logo.jpg" alt="赛博琥珀博物馆" className="h-full w-full object-cover" />
           </div>
           <span className="text-gradient-amber hidden sm:inline">
             赛博琥珀博物馆

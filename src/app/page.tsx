@@ -62,8 +62,8 @@ export default function HomePage() {
     <div className="mx-auto max-w-7xl px-4 py-8">
       {/* Hero */}
       <section className="mb-10 text-center">
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-gold to-amber-light">
-          <span className="text-cyber-bg text-3xl font-black">琥</span>
+        <div className="mx-auto mb-6 h-16 w-16 overflow-hidden rounded-2xl">
+          <img src="/logo.jpg" alt="赛博琥珀博物馆" className="h-full w-full object-cover" />
         </div>
         <h1 className="text-3xl font-bold sm:text-4xl">
           赛博<span className="text-gradient-amber">琥珀</span>博物馆
