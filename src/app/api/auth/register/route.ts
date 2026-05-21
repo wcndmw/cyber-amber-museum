@@ -32,7 +32,9 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ success: true }, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "注册失败" }, { status: 500 });
+  } catch (e) {
+    const err = e as Error;
+    console.error("POST /api/auth/register error:", err.message);
+    return NextResponse.json({ error: `注册失败: ${err.message}` }, { status: 500 });
   }
 }

@@ -53,8 +53,9 @@ export async function GET(req: Request) {
       },
     });
   } catch (error) {
-    console.error("GET /api/posts error:", error);
-    return NextResponse.json({ error: "获取作品失败" }, { status: 500 });
+    const err = error as Error;
+    console.error("GET /api/posts error:", err.message, err.stack);
+    return NextResponse.json({ error: `获取作品失败: ${err.message}` }, { status: 500 });
   }
 }
 
