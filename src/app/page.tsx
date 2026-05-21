@@ -14,10 +14,12 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [sort, setSort] = useState<SortType>("latest");
+  const [error, setError] = useState("");
 
   const fetchPosts = useCallback(
     async (reset = false) => {
       setLoading(true);
+      setError("");
       try {
         const params = new URLSearchParams({ sort, limit: "12" });
         if (!reset && cursor) params.set("cursor", cursor);
@@ -25,15 +27,20 @@ export default function HomePage() {
         const res = await fetch(`/api/posts?${params}`);
         const data = await res.json();
 
-        if (reset) {
-          setPosts(data.posts);
-        } else {
-          setPosts((prev) => [...prev, ...data.posts]);
+        if (!res.ok || data.error) {
+          setError(data.error || "加载失败");
+          return;
         }
-        setCursor(data.pagination.cursor);
-        setHasMore(data.pagination.hasMore);
-      } catch (err) {
-        console.error("Failed to fetch posts:", err);
+
+        if (reset) {
+          setPosts(data.posts || []);
+        } else {
+          setPosts((prev) => [...prev, ...(data.posts || [])]);
+        }
+        setCursor(data.pagination?.cursor || null);
+        setHasMore(data.pagination?.hasMore ?? false);
+      } catch {
+        setError("网络错误，请刷新重试");
       } finally {
         setLoading(false);
         setInitialLoading(false);
@@ -47,6 +54,7 @@ export default function HomePage() {
     setCursor(null);
     setHasMore(true);
     setInitialLoading(true);
+    setError("");
     fetchPosts(true);
   }, [sort]);
 
@@ -86,7 +94,17 @@ export default function HomePage() {
       </div>
 
       {/* Posts */}
-      {initialLoading ? (
+      {error ? (
+        <div className="flex flex-col items-center gap-3 py-16 text-muted-foreground">
+          <p className="text-sm">{error}</p>
+          <button
+            onClick={() => fetchPosts(true)}
+            className="rounded-lg bg-amber-gold/20 px-4 py-2 text-xs text-amber-gold hover:bg-amber-gold/30 transition-colors"
+          >
+            点击重试
+          </button>
+        </div>
+      ) : initialLoading ? (
         <PostGrid posts={[]} emptyMessage="加载中..." />
       ) : (
         <>
