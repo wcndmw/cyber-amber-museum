@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid()) @db.Uuid
+  username      String         @unique @db.VarChar(30)
+  email         String         @unique @db.VarChar(255)
+  passwordHash  String?        @map("password_hash") @db.VarChar(255)
+  avatarUrl     String?        @map("avatar_url") @db.Text
+  bannerUrl     String?        @map("banner_url") @db.Text
+  bio           String?        @db.VarChar(500)
+  role          String         @default("user") @db.VarChar(20)
+  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt     DateTime       @updatedAt @map("updated_at") @db.Timestamptz()
+
+  posts         Post[]
+  likes         Like[]
+  comments      Comment[]
+  notifications Notification[] @relation("NotificationUser")
+  actedNotifications Notification[] @relation("NotificationActor")
+
+  @@map("users")
+}
+
+model Post {
+  id           String      @id @default(uuid()) @db.Uuid
+  userId       String      @map("user_id") @db.Uuid
+  title        String      @db.VarChar(100)
+  description  String?     @db.Text
+  gameName     String?     @map("game_name") @db.VarChar(100)
+  mediaType    String      @map("media_type") @db.VarChar(10)
+  mediaUrl     String      @map("media_url") @db.Text
+  thumbnailUrl String?     @map("thumbnail_url") @db.Text
+  tags         String[]    @default([])
+  isFeatured   Boolean     @default(false) @map("is_featured")
+  viewCount    Int         @default(0) @map("view_count")
+  createdAt    DateTime    @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt    DateTime    @updatedAt @map("updated_at") @db.Timestamptz()
+
+  author        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes         Like[]
+  comments      Comment[]
+  notifications Notification[]
+
+  @@index([userId])
+  @@index([createdAt(sort: Desc)])
+  @@map("posts")
+}
+
+model Like {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  postId    String   @map("post_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([postId])
+  @@map("likes")
+}
+
+model Comment {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  postId    String    @map("post_id") @db.Uuid
+  parentId  String?   @map("parent_id") @db.Uuid
+  content   String    @db.Text
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
+
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post          Post       @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parent        Comment?   @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies       Comment[]  @relation("CommentReplies")
+  notifications Notification[]
+
+  @@index([postId])
+  @@map("comments")
+}
+
+model Notification {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  actorId   String?   @map("actor_id") @db.Uuid
+  type      String    @db.VarChar(20)
+  postId    String?   @map("post_id") @db.Uuid
+  commentId String?   @map("comment_id") @db.Uuid
+  isRead    Boolean   @default(false) @map("is_read")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+
+  user    User     @relation("NotificationUser", fields: [userId], references: [id], onDelete: Cascade)
+  actor   User?    @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
+  post    Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  comment Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
